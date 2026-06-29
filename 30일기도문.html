@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>30일 기도문</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;500&display=swap');
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#FDF6EC;color:#3D2B1F;font-family:'Noto Sans KR',sans-serif;min-height:100vh}
+
+    /* ── SCREENS ── */
+    .screen{display:none}
+    .screen.active{display:block}
+
+    /* ── HOME ── */
+    #home{padding:0 0 60px}
+    .home-header{
+      background:linear-gradient(135deg,#8B5C3E 0%,#C9956A 100%);
+      color:#fff;text-align:center;padding:56px 24px 44px;
+    }
+    .home-header h1{font-family:'Nanum Myeongjo',serif;font-size:2.2rem;letter-spacing:.1em;margin-bottom:10px}
+    .home-header p{font-size:.95rem;opacity:.85;letter-spacing:.04em}
+    .home-cards{
+      max-width:520px;margin:40px auto 0;padding:0 20px;
+      display:grid;grid-template-columns:1fr 1fr;gap:18px
+    }
+    .theme-card{
+      background:#fff;border-radius:20px;padding:32px 20px;text-align:center;
+      box-shadow:0 4px 20px rgba(61,43,31,.1);border:2px solid transparent;
+      cursor:pointer;transition:all .25s
+    }
+    .theme-card:hover{transform:translateY(-4px);box-shadow:0 8px 32px rgba(61,43,31,.16)}
+    .theme-card.card-child{border-color:#EDD9C5}
+    .theme-card.card-husband{border-color:#C5D9ED}
+    .theme-icon{font-size:2.8rem;margin-bottom:14px}
+    .theme-card h2{font-family:'Nanum Myeongjo',serif;font-size:1.05rem;margin-bottom:8px}
+    .theme-card .sub{font-size:.78rem;color:#9A7A60;margin-bottom:16px}
+    .mini-progress-bg{background:#F2E4D4;border-radius:99px;height:6px;overflow:hidden;margin-bottom:6px}
+    .mini-progress-fill{height:100%;border-radius:99px;transition:width .4s}
+    .card-child .mini-progress-fill{background:linear-gradient(90deg,#D4A57A,#8B5C3E)}
+    .card-husband .mini-progress-fill{background:linear-gradient(90deg,#7A9DC9,#3A5A8C)}
+    .mini-label{font-size:.72rem;color:#A07850}
+
+    /* ── DETAIL SCREEN ── */
+    #child-screen, #husband-screen{padding-bottom:60px}
+    .detail-header{
+      padding:40px 24px 28px;color:#fff;text-align:center;position:relative;
+    }
+    .header-child{background:linear-gradient(135deg,#8B5C3E,#C9956A)}
+    .header-husband{background:linear-gradient(135deg,#3A5A8C,#7A9DC9)}
+    .back-btn{
+      position:absolute;top:18px;left:18px;background:rgba(255,255,255,.22);
+      border:none;color:#fff;padding:7px 14px;border-radius:99px;
+      cursor:pointer;font-size:.82rem;font-family:'Noto Sans KR',sans-serif;
+      transition:background .2s
+    }
+    .back-btn:hover{background:rgba(255,255,255,.35)}
+    .detail-header h1{font-family:'Nanum Myeongjo',serif;font-size:1.8rem;letter-spacing:.08em;margin-bottom:6px}
+    .detail-header p{font-size:.88rem;opacity:.85}
+
+    .progress-section{max-width:700px;margin:24px auto 0;padding:0 20px}
+    .progress-label{display:flex;justify-content:space-between;font-size:.82rem;color:#7A5540;margin-bottom:7px}
+    .progress-bar-bg{background:#EDD9C5;border-radius:99px;height:9px;overflow:hidden}
+    .progress-bar-fill{height:100%;border-radius:99px;transition:width .5s ease}
+    .fill-child{background:linear-gradient(90deg,#C9956A,#8B5C3E)}
+    .fill-husband{background:linear-gradient(90deg,#7A9DC9,#3A5A8C)}
+
+    /* ── GRID ── */
+    .grid{max-width:700px;margin:20px auto 0;padding:0 20px;display:grid;gap:14px}
+
+    /* ── CARD ── */
+    .day-card{
+      background:#fff;border-radius:14px;
+      box-shadow:0 2px 10px rgba(61,43,31,.07);
+      border:1.5px solid #F2E4D4;overflow:hidden;
+      transition:box-shadow .2s,opacity .3s
+    }
+    .day-card:hover{box-shadow:0 5px 20px rgba(61,43,31,.13)}
+    .day-card.done{background:#FFFCF8;border-color:#D4A57A;opacity:.82}
+
+    .card-header{
+      display:flex;align-items:center;gap:12px;
+      padding:16px 18px 13px;cursor:pointer;user-select:none
+    }
+    .day-num{
+      width:40px;height:40px;border-radius:50%;flex-shrink:0;
+      display:flex;align-items:center;justify-content:center;
+      font-family:'Nanum Myeongjo',serif;font-size:1rem;font-weight:700;
+      transition:background .3s;color:#5C3317;
+    }
+    .num-child{background:linear-gradient(135deg,#EDD9C5,#D4A57A)}
+    .num-husband{background:linear-gradient(135deg,#C5D9ED,#7A9DC9);color:#1A3A60}
+    .day-card.done .num-child{background:linear-gradient(135deg,#C9956A,#8B5C3E);color:#fff}
+    .day-card.done .num-husband{background:linear-gradient(135deg,#7A9DC9,#3A5A8C);color:#fff}
+
+    .card-info{flex:1;min-width:0}
+    .card-title{
+      font-family:'Nanum Myeongjo',serif;font-size:1rem;font-weight:700;
+      color:#3D2B1F;white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+    }
+    .card-date{font-size:.72rem;color:#A07850;margin-top:2px}
+
+    .check-btn{
+      width:32px;height:32px;border-radius:50%;border:2px solid #D4A57A;
+      background:transparent;cursor:pointer;flex-shrink:0;
+      display:flex;align-items:center;justify-content:center;transition:all .2s
+    }
+    .check-btn:hover{border-color:#C9956A;background:#FDF0E4}
+    .check-btn svg{opacity:0;transition:opacity .2s}
+    .day-card.done .check-btn{background:#C9956A;border-color:#C9956A}
+    .day-card.done .check-btn svg{opacity:1}
+
+    .expand-icon{width:18px;height:18px;color:#C9956A;flex-shrink:0;transition:transform .25s}
+    .day-card.open .expand-icon{transform:rotate(180deg)}
+
+    /* ── PRAYER BODY ── */
+    .card-body{max-height:0;overflow:hidden;transition:max-height .4s ease}
+    .day-card.open .card-body{max-height:500px}
+    .card-body-inner{padding:14px 18px 18px;border-top:1px solid #F2E4D4}
+    .prayer-verse{
+      font-size:.78rem;color:#A07850;font-style:italic;
+      padding-left:10px;border-left:3px solid #D4A57A;margin-bottom:11px;line-height:1.6
+    }
+    .prayer-text{font-size:.91rem;line-height:2;color:#4A3728;white-space:pre-line}
+
+    /* ── RESET ── */
+    .reset-wrap{text-align:center;padding:24px 0 8px}
+    .reset-btn{
+      background:transparent;border:1.5px solid #D4A57A;color:#8B5C3E;
+      padding:8px 22px;border-radius:99px;cursor:pointer;
+      font-size:.82rem;font-family:'Noto Sans KR',sans-serif;transition:all .2s
+    }
+    .reset-btn:hover{background:#FDE8D8}
+
+    @media(max-width:480px){
+      .home-cards{grid-template-columns:1fr}
+      .detail-header h1{font-size:1.5rem}
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════ HOME ════════════════ -->
+<div id="home" class="screen active">
+  <div class="home-header">
+    <h1>30일 기도문</h1>
+    <p>날마다 믿음으로 드리는 기도</p>
+    <a href="기도문관리자.html" style="display:inline-block;margin-top:16px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);color:#fff;padding:6px 16px;border-radius:8px;font-size:.78rem;text-decoration:none;letter-spacing:.02em;">✏️ 기도문 편집</a>
+  </div>
+  <div class="home-cards">
+    <div class="theme-card card-child" onclick="goTo('child')">
+      <div class="theme-icon">🌱</div>
+      <h2>자녀를 위한<br>30일 기도</h2>
+      <p class="sub">자녀의 믿음과 성장을 위해</p>
+      <div class="mini-progress-bg">
+        <div class="mini-progress-fill" id="home-child-fill" style="width:0%"></div>
+      </div>
+      <div class="mini-label" id="home-child-label">0 / 30</div>
+    </div>
+    <div class="theme-card card-husband" onclick="goTo('husband')">
+      <div class="theme-icon">🕊️</div>
+      <h2>남편을 위한<br>30일 기도</h2>
+      <p class="sub">남편의 신앙과 가정을 위해</p>
+      <div class="mini-progress-bg">
+        <div class="mini-progress-fill" id="home-husband-fill" style="width:0%"></div>
+      </div>
+      <div class="mini-label" id="home-husband-label">0 / 30</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ CHILD SCREEN ════════════════ -->
+<div id="child-screen" class="screen">
+  <div class="detail-header header-child">
+    <button class="back-btn" onclick="goHome()">← 홈으로</button>
+    <h1>자녀를 위한 30일 기도</h1>
+    <p>자녀의 믿음과 성장을 위해</p>
+  </div>
+  <div class="progress-section">
+    <div class="progress-label">
+      <span>진행률</span>
+      <span id="child-progress-text">0 / 30 완료</span>
+    </div>
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill fill-child" id="child-progress-fill" style="width:0%"></div>
+    </div>
+  </div>
+  <div class="grid" id="child-grid">
+    <!-- 30 child prayer cards injected by JS -->
+  </div>
+  <div class="reset-wrap">
+    <button class="reset-btn" onclick="resetSection('child')">기도 기록 초기화</button>
+  </div>
+</div>
+
+<!-- ════════════════ HUSBAND SCREEN ════════════════ -->
+<div id="husband-screen" class="screen">
+  <div class="detail-header header-husband">
+    <button class="back-btn" onclick="goHome()">← 홈으로</button>
+    <h1>남편을 위한 30일 기도</h1>
+    <p>남편의 신앙과 가정을 위해</p>
+  </div>
+  <div class="progress-section">
+    <div class="progress-label">
+      <span>진행률</span>
+      <span id="husband-progress-text">0 / 30 완료</span>
+    </div>
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill fill-husband" id="husband-progress-fill" style="width:0%"></div>
+    </div>
+  </div>
+  <div class="grid" id="husband-grid">
+    <!-- 30 husband prayer cards injected by JS -->
+  </div>
+  <div class="reset-wrap">
+    <button class="reset-btn" onclick="resetSection('husband')">기도 기록 초기화</button>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════
+//  PRAYER DATA
+//  각 항목 수정: title(제목), verse(성경구절), ref(구절 출처), text(기도문)
+// ════════════════════════════════════════════
+const PRAYERS = {
+  child: [
+    {
+      title: "믿음 안에서 자라나게 하소서",
+      verse: "마땅히 행할 길을 아이에게 가르치라 그리하면 늙어도 그것을 떠나지 아니하리라",
+      ref: "잠언 22:6",
+      text: `사랑하는 하나님 아버지,
+오늘도 저의 자녀를 주님의 손에 올려드립니다.
+아이의 마음 밭에 믿음의 씨앗이 뿌리 깊이 내리게 하시고,
+주님의 말씀을 사랑하며 날마다 자라나게 하여 주옵소서.
+세상의 어떤 유혹과 흔들림 앞에서도
+주님께 붙들린 삶을 살아가는 자녀가 되게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "건강한 몸과 마음을 주소서",
+      verse: "사랑하는 자여 네 영혼이 잘됨같이 네가 범사에 잘되고 강건하기를 내가 간구하노라",
+      ref: "요한삼서 1:2",
+      text: `아버지 하나님,
+제 자녀의 몸과 마음을 주님의 손으로 지켜 주옵소서.
+건강한 육체를 허락하시고,
+두려움이나 불안 없이 평안한 마음을 갖게 하여 주옵소서.
+아이가 날마다 주님 안에서 기쁨을 발견하게 하시고,
+어떤 아픔도 주님이 함께하심으로 이겨내게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "선한 친구들을 만나게 하소서",
+      verse: "지혜로운 자와 동행하면 지혜를 얻고 미련한 자와 사귀면 해를 받느니라",
+      ref: "잠언 13:20",
+      text: `하나님,
+제 아이 곁에 선하고 좋은 친구들을 붙여 주시길 기도합니다.
+서로를 선하게 세워주는 우정을 허락하시고,
+함께할 때 더욱 주님께 가까워지는 관계들을 맺게 하여 주옵소서.
+혹 잘못된 관계에서는 지혜롭게 벗어나게 하시고,
+아이 스스로도 좋은 친구가 되는 사람으로 자라나게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "학업에 지혜를 더하여 주소서",
+      verse: "너희 중에 누구든지 지혜가 부족하거든 모든 사람에게 후히 주시고 꾸짖지 아니하시는 하나님께 구하라",
+      ref: "야고보서 1:5",
+      text: `지혜의 근원이신 하나님,
+제 자녀가 배움의 자리에서 주님이 주시는 지혜로 공부하게 하여 주옵소서.
+어렵고 힘든 과목도 포기하지 않는 인내를 주시고,
+배운 것을 선하게 쓸 줄 아는 아이로 자라나게 하여 주옵소서.
+성적보다 인성이, 결과보다 과정이 아름다운 아이가 되게 하시고,
+주님께서 예비하신 길을 걸어가게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "감사하는 마음을 허락하소서",
+      verse: "범사에 감사하라 이것이 그리스도 예수 안에서 너희를 향하신 하나님의 뜻이니라",
+      ref: "데살로니가전서 5:18",
+      text: `하나님,
+제 자녀가 작은 것에도 감사할 줄 아는 마음을 갖게 하여 주옵소서.
+불평보다 감사가, 원망보다 기도가 먼저 나오는 아이가 되게 하시고,
+날마다 주님이 주신 은혜를 세어보며 자라나게 하여 주옵소서.
+넉넉한 환경에서나 부족한 환경에서나
+항상 감사하며 기뻐하는 아이가 되게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "거짓과 타협하지 않게 하소서",
+      verse: "내가 주께 범죄하지 아니하려 하여 주의 말씀을 내 마음에 두었나이다",
+      ref: "시편 119:11",
+      text: `진리의 하나님,
+제 자녀가 정직하고 올곧은 아이로 자라나게 하여 주옵소서.
+손해가 되더라도 진실을 말하는 용기를 주시고,
+세상의 기준이 아닌 주님의 말씀을 기준으로 삼는 아이가 되게 하여 주옵소서.
+죄 앞에서 돌아설 줄 알고,
+양심의 소리를 듣고 따르는 삶을 살게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "두려움을 이기는 담대함을 주소서",
+      verse: "하나님이 우리에게 주신 것은 두려워하는 마음이 아니요 오직 능력과 사랑과 절제하는 마음이니",
+      ref: "디모데후서 1:7",
+      text: `하나님,
+제 자녀가 어떤 두려움도 주님의 이름으로 이겨내게 하여 주옵소서.
+새로운 도전 앞에서 물러서지 않는 담대함을 주시고,
+실패가 두렵더라도 다시 일어서는 용기를 허락하여 주옵소서.
+주님이 함께하신다는 믿음이 아이의 마음에 깊이 뿌리 내리게 하시고,
+두려움이 아닌 믿음으로 삶을 걸어가게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "섬기는 마음을 심어 주소서",
+      verse: "인자가 온 것은 섬김을 받으려 함이 아니라 도리어 섬기려 하고",
+      ref: "마가복음 10:45",
+      text: `주님,
+제 자녀가 예수님처럼 섬기는 자로 자라나게 하여 주옵소서.
+자기보다 남을 낫게 여기는 마음을 허락하시고,
+도움이 필요한 사람에게 손을 내미는 아이가 되게 하여 주옵소서.
+작은 섬김에서 시작하여 점점 더 큰 사랑으로 세상을 섬기는 사람이 되게 하시고,
+섬김 속에서 진정한 기쁨을 발견하게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "말의 덕을 세우는 아이가 되게 하소서",
+      verse: "오직 덕을 세우는 데 소용되는 대로 선한 말을 하여 듣는 자들에게 은혜를 끼치게 하라",
+      ref: "에베소서 4:29",
+      text: `말씀이신 하나님,
+제 자녀의 입술을 주님이 다스려 주시길 기도합니다.
+상처 주는 말 대신 격려의 말을,
+험담 대신 선한 말을 하는 아이가 되게 하여 주옵소서.
+함부로 뱉은 말이 얼마나 큰 상처가 되는지 알게 하시고,
+말 한마디로 사람을 살리는 능력을 가진 아이로 자라나게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "부모를 공경하게 하소서",
+      verse: "네 부모를 공경하라 그리하면 네 하나님 여호와가 네게 준 땅에서 네 생명이 길리라",
+      ref: "출애굽기 20:12",
+      text: `하나님,
+제 자녀가 부모를 공경하고 순종하는 아이로 자라나게 하여 주옵소서.
+부모의 말을 가볍게 여기지 않고,
+사랑으로 주어진 훈계를 감사히 받아들이게 하여 주옵소서.
+또한 저도 아이가 공경할 만한 부모가 되도록 인도하여 주시고,
+우리 가정이 하나님의 질서 안에서 아름답게 세워지게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "용서를 배우는 아이가 되게 하소서",
+      verse: "서로 용서하기를 하나님이 그리스도 안에서 너희를 용서하심과 같이 하라",
+      ref: "에베소서 4:32",
+      text: `용서의 하나님,
+제 자녀가 용서하고 용서받을 줄 아는 아이로 자라나게 하여 주옵소서.
+상처받았을 때 원망을 오래 품지 않고
+주님처럼 용서하는 마음을 갖게 하여 주옵소서.
+또한 잘못을 했을 때는 진심으로 사과하는 용기도 허락하여 주시고,
+용서를 통해 관계가 회복되는 기적을 경험하게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "미디어를 분별하게 하소서",
+      verse: "너희는 이 세대를 본받지 말고 오직 마음을 새롭게 함으로 변화를 받아",
+      ref: "로마서 12:2",
+      text: `지혜의 하나님,
+제 자녀가 넘쳐나는 미디어와 정보 속에서 분별력을 갖게 하여 주옵소서.
+세상의 가치관에 무너지지 않고 말씀으로 단단히 세워지게 하시고,
+보고 듣는 것들이 마음을 더럽히지 않도록 보호하여 주옵소서.
+좋은 것과 나쁜 것을 구분하는 지혜를 허락하시고,
+주님이 기뻐하시는 것을 선택하는 아이가 되게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "스스로 기도하는 아이가 되게 하소서",
+      verse: "쉬지 말고 기도하라",
+      ref: "데살로니가전서 5:17",
+      text: `기도를 들으시는 하나님,
+제 자녀가 스스로 주님께 나아가는 기도의 사람이 되게 하여 주옵소서.
+어린 나이에도 하나님이 살아계신 분임을 믿고 기도하게 하시고,
+작은 것도 주님께 아뢰는 친밀한 관계를 맺게 하여 주옵소서.
+어려울 때 사람에게 먼저 달려가는 것이 아니라
+주님께 먼저 무릎 꿇는 아이가 되게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "하나님의 뜻 안에서 꿈을 품게 하소서",
+      verse: "너희를 향한 나의 생각은 평안이요 재앙이 아니니라 너희에게 미래와 희망을 주는 것이니라",
+      ref: "예레미야 29:11",
+      text: `꿈을 주시는 하나님,
+제 자녀에게 주님이 예비하신 꿈을 발견하게 하여 주옵소서.
+세상이 말하는 성공이 아닌 하나님이 원하시는 길을 걷게 하시고,
+그 꿈을 이루기 위해 최선을 다하는 열정도 허락하여 주옵소서.
+돌아가는 길이라도, 오래 걸리는 길이라도
+주님이 인도하시는 길이라면 감사함으로 걷게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "주님의 영광을 위해 쓰임받게 하소서",
+      verse: "무엇을 하든지 다 하나님의 영광을 위하여 하라",
+      ref: "고린도전서 10:31",
+      text: `영광의 하나님,
+제 자녀의 삶이 주님의 영광을 위한 도구가 되게 하여 주옵소서.
+작은 재능이든 큰 재능이든 주님께서 주신 것임을 알고
+하나님 나라를 위해 아낌없이 쓰는 아이가 되게 하여 주옵소서.
+어디에 있든 무엇을 하든 그 자리에서 주님의 향기를 발하게 하시고,
+이 세대를 변화시키는 하나님의 사람이 되게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "온유하고 겸손한 아이가 되게 하소서",
+      verse: "나는 마음이 온유하고 겸손하니 나의 멍에를 메고 내게 배우라",
+      ref: "마태복음 11:29",
+      text: `온유하신 주님,
+제 자녀에게 예수님의 온유함과 겸손함을 닮게 하여 주옵소서.
+자기를 내세우지 않고 다른 사람을 존중하는 아이가 되게 하시고,
+잘못을 인정할 줄 알며 칭찬 앞에서도 교만하지 않게 하여 주옵소서.
+진정한 강함은 낮아지는 데서 나온다는 것을 알게 하시고,
+주님처럼 낮고 온유한 마음으로 세상을 품는 아이가 되게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "성경을 사랑하게 하소서",
+      verse: "주의 말씀은 내 발에 등이요 내 길에 빛이니이다",
+      ref: "시편 119:105",
+      text: `말씀의 하나님,
+제 자녀가 성경을 사랑하는 아이로 자라나게 하여 주옵소서.
+말씀을 읽을 때마다 주님의 음성을 듣는 기쁨을 허락하시고,
+읽은 말씀이 삶 속에서 살아 역사하는 경험을 하게 하여 주옵소서.
+어린 시절부터 쌓인 말씀이 평생의 등불이 되게 하시고,
+어떤 어려움 앞에서도 말씀으로 서는 아이가 되게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "나눔의 기쁨을 알게 하소서",
+      verse: "주는 것이 받는 것보다 복이 있다",
+      ref: "사도행전 20:35",
+      text: `풍성한 하나님,
+제 자녀가 나누는 것에서 기쁨을 발견하게 하여 주옵소서.
+자신의 것을 움켜쥐지 않고 흘려보낼 줄 아는 아이가 되게 하시고,
+가진 것이 적어도 나눌 수 있다는 것을 알게 하여 주옵소서.
+나눔을 통해 하나님 나라가 이 땅에 임하는 것을 경험하게 하시고,
+받기보다 주기를 더 좋아하는 복된 아이가 되게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "교회를 사랑하게 하소서",
+      verse: "모이기를 폐하는 어떤 사람들의 습관과 같이 하지 말고",
+      ref: "히브리서 10:25",
+      text: `교회의 머리이신 주님,
+제 자녀가 하나님의 교회를 사랑하는 아이로 자라나게 하여 주옵소서.
+예배를 귀히 여기고 설레는 마음으로 나아가게 하시고,
+믿음의 공동체 안에서 사랑을 받고 또 사랑을 나누게 하여 주옵소서.
+교회를 의무가 아닌 기쁨으로 섬기게 하시고,
+평생 하나님의 집을 사랑하는 사람으로 살게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "어려움을 이기는 인내를 주소서",
+      verse: "인내를 온전히 이루라 이는 너희로 온전하고 구비하여 조금도 부족함이 없게 하려 함이라",
+      ref: "야고보서 1:4",
+      text: `인내의 하나님,
+제 자녀가 어려운 상황에서도 포기하지 않는 인내를 갖게 하여 주옵소서.
+쉽게 좌절하거나 낙심하지 않고
+주님을 바라보며 끝까지 걸어가는 아이가 되게 하여 주옵소서.
+시험과 고난 속에서 더욱 단단해지게 하시고,
+인내 끝에 주님이 예비하신 아름다운 열매를 맺게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "자신을 소중히 여기게 하소서",
+      verse: "내가 주께 감사하옴은 나를 지으심이 심히 기묘하심이라",
+      ref: "시편 139:14",
+      text: `창조주 하나님,
+제 자녀가 주님이 만드신 자신을 소중히 여기게 하여 주옵소서.
+다른 사람과 비교하며 스스로를 낮추지 않게 하시고,
+하나님의 형상으로 지음받은 존귀함을 알게 하여 주옵소서.
+외모나 능력이 아닌 주님의 시선으로 자신을 보게 하시고,
+건강한 자존감과 정체성을 가진 아이로 자라나게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "창의성과 재능을 개발하게 하소서",
+      verse: "우리는 그가 만드신 바라 그리스도 예수 안에서 선한 일을 위하여 지으심을 받은 자니",
+      ref: "에베소서 2:10",
+      text: `창조의 하나님,
+제 자녀에게 주님이 심어주신 재능과 창의성이 꽃피우게 하여 주옵소서.
+각자에게 주어진 독특한 은사를 발견하게 하시고,
+그것을 주님과 이웃을 위해 사용하도록 인도하여 주옵소서.
+비교가 아닌 자신만의 색깔로 이 세상을 아름답게 가꾸는 아이가 되게 하시고,
+주님이 기뻐하시는 방식으로 세상에 기여하게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "마음의 순결을 지키게 하소서",
+      verse: "마음이 청결한 자는 복이 있나니 그들이 하나님을 볼 것임이요",
+      ref: "마태복음 5:8",
+      text: `거룩하신 하나님,
+제 자녀의 마음과 생각을 정결하게 지켜 주시길 기도합니다.
+세상의 더러운 것들이 아이의 내면을 오염시키지 않도록 보호하여 주시고,
+눈과 귀를 통해 들어오는 것들을 분별하게 하여 주옵소서.
+순결한 마음으로 하나님을 가까이하고
+주님의 임재를 날마다 경험하는 아이가 되게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "회개할 줄 아는 아이가 되게 하소서",
+      verse: "만일 우리가 우리 죄를 자백하면 그는 미쁘시고 의로우사 우리 죄를 사하시며",
+      ref: "요한일서 1:9",
+      text: `용서하시는 하나님,
+제 자녀가 잘못을 알았을 때 지체 없이 회개할 줄 아는 아이가 되게 하여 주옵소서.
+자존심 때문에 잘못을 덮으려 하지 않고
+진심으로 뉘우치고 돌아서는 용기를 허락하여 주옵소서.
+하나님의 용서가 얼마나 크고 깊은지 날마다 경험하게 하시고,
+그 은혜에 감격하여 더욱 주님을 사랑하는 아이가 되게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "감동을 주는 삶을 살게 하소서",
+      verse: "이같이 너희 빛이 사람 앞에 비치게 하여 그들로 너희 착한 행실을 보고 하늘에 계신 너희 아버지께 영광을 돌리게 하라",
+      ref: "마태복음 5:16",
+      text: `빛이신 하나님,
+제 자녀의 삶이 주변 사람들에게 선한 영향력이 되게 하여 주옵소서.
+말보다 행동으로, 주장보다 삶으로 믿음을 보이는 아이가 되게 하시고,
+아이의 존재 자체가 하나님이 살아계심을 증거하게 하여 주옵소서.
+어디를 가든 그 자리를 밝히는 빛이 되게 하시고,
+세상에 선한 감동을 남기는 아이로 자라나게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "시간을 소중히 여기게 하소서",
+      verse: "세월을 아끼라 때가 악하니라",
+      ref: "에베소서 5:16",
+      text: `시간의 주인이신 하나님,
+제 자녀가 주어진 시간을 소중히 여기게 하여 주옵소서.
+게으름에 빠지지 않고 부지런히 선한 것을 이루게 하시고,
+쉼도 하나님 안에서 회복의 시간임을 알게 하여 주옵소서.
+지금 이 나이, 이 순간이 주님이 주신 선물임을 깨닫게 하시고,
+매일을 감사함으로 충실하게 살아가는 아이가 되게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "복음을 부끄러워하지 않게 하소서",
+      verse: "내가 복음을 부끄러워하지 아니하노니 이 복음은 모든 믿는 자에게 구원을 주시는 하나님의 능력이 됨이라",
+      ref: "로마서 1:16",
+      text: `복음의 하나님,
+제 자녀가 예수 그리스도의 복음을 부끄러워하지 않게 하여 주옵소서.
+친구들 앞에서도, 낯선 사람들 앞에서도
+주님을 자랑하는 담대함을 허락하여 주옵소서.
+복음이 사람을 살리는 능력임을 경험하게 하시고,
+그 기쁜 소식을 전하는 일에 헌신하는 아이가 되게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "어른이 되어서도 주님 곁에 있게 하소서",
+      verse: "청년이 무엇으로 그의 행실을 깨끗하게 하리이까 주의 말씀만 지킬 따름이니이다",
+      ref: "시편 119:9",
+      text: `신실하신 하나님,
+제 자녀가 어른이 되어서도 주님 곁을 떠나지 않게 하여 주옵소서.
+청소년기의 방황 속에서도 주님이 붙잡아 주시고,
+청년의 때를 주님을 위해 아름답게 드리게 하여 주옵소서.
+지금 심어진 믿음이 평생의 뿌리가 되게 하시고,
+어떤 풍파가 와도 흔들리지 않는 믿음의 사람으로 세워 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "주님께서 이 기도를 이루어 주실 줄 믿습니다",
+      verse: "구하라 그리하면 너희에게 주실 것이요 찾으라 그리하면 찾아낼 것이요 문을 두드리라 그리하면 너희에게 열릴 것이니",
+      ref: "마태복음 7:7",
+      text: `응답하시는 하나님,
+지난 30일 동안 자녀를 위해 올려드린 기도들을 주님께서 들으셨음을 믿습니다.
+기도한 것들이 주님의 때에 이루어질 것을 신뢰하며 감사드립니다.
+제가 포기할 때도, 지쳐 쓰러질 때도
+주님께서 제 자녀를 붙들어 주실 줄 믿습니다.
+기도의 자리로 이끌어 주신 하나님께 모든 영광 돌립니다.
+예수님의 이름으로 기도합니다. 아멘.`
+    }
+  ],
+
+  husband: [
+    {
+      title: "지혜로운 가장이 되게 하소서",
+      verse: "남편들아 아내 사랑하기를 그리스도께서 교회를 사랑하시고 그 교회를 위하여 자신을 주심같이 하라",
+      ref: "에베소서 5:25",
+      text: `주님,
+남편이 하나님 앞에서 신실한 가장으로 서게 하여 주옵소서.
+매일의 일상 속에서 주님의 뜻을 구하는 남편이 되게 하시고,
+가정을 사랑과 말씀으로 이끌어 가는 지혜를 허락하여 주옵소서.
+어려운 결정의 순간마다 성령의 인도하심을 따르게 하시고,
+하나님 안에서 든든한 반석 같은 남편이 되게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "일터에서 주님의 빛이 되게 하소서",
+      verse: "무슨 일을 하든지 마음을 다하여 주께 하듯 하고 사람에게 하듯 하지 말라",
+      ref: "골로새서 3:23",
+      text: `주님,
+남편이 일터에서도 주님의 사람으로 살아가게 하여 주옵소서.
+맡겨진 일에 성실하고 정직하게 임하게 하시고,
+함께 일하는 사람들에게 사랑과 섬김의 모습을 보이게 하여 주옵소서.
+어려움이 있을 때마다 주님께 지혜를 구하고,
+하나님이 주신 직분에 감사하며 열심히 행하게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "영적으로 깨어있게 하소서",
+      verse: "근신하라 깨어라 너희 대적 마귀가 우는 사자같이 두루 다니며 삼킬 자를 찾나니",
+      ref: "베드로전서 5:8",
+      text: `주님,
+남편이 영적으로 항상 깨어있는 삶을 살게 하여 주옵소서.
+말씀을 가까이하고, 기도를 쉬지 않으며,
+성령의 인도하심에 민감하게 반응하는 영혼이 되게 하여 주옵소서.
+세상의 유혹과 죄악에 흔들리지 않도록 보호하여 주시고,
+날마다 주님과 동행하는 하루가 되게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "건강을 지켜 주소서",
+      verse: "그가 네 모든 죄악을 사하시며 네 모든 병을 고치시며",
+      ref: "시편 103:3",
+      text: `치유자이신 하나님,
+남편의 몸과 마음을 건강하게 지켜 주시길 기도합니다.
+몸의 피로와 스트레스로부터 회복하게 하시고,
+영혼의 안식을 누리게 하여 주옵소서.
+혹시라도 아픔이 있다면 주님의 손길로 낫게 하시고,
+건강한 몸으로 가족을 섬기고 주님을 예배할 수 있게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "부부가 한 마음 되게 하소서",
+      verse: "두 사람이 한 사람보다 나음은 그들이 수고함으로 좋은 상을 얻을 것임이라",
+      ref: "전도서 4:9",
+      text: `주님,
+저와 남편이 주님 안에서 하나가 되게 하여 주옵소서.
+서로 다른 부분을 인정하고 이해하며,
+다툼보다 대화를, 고집보다 양보를 선택하게 하여 주옵소서.
+함께 기도하고, 함께 예배하며,
+주님이 맺어주신 이 언약을 귀히 여기는 부부가 되게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "재정을 주님께 맡기게 하소서",
+      verse: "그런즉 너희는 먼저 그의 나라와 그의 의를 구하라 그리하면 이 모든 것을 너희에게 더하시리라",
+      ref: "마태복음 6:33",
+      text: `공급자이신 하나님,
+우리 가정의 재정을 주님께 의탁합니다.
+남편이 돈보다 하나님을 더 신뢰하게 하시고,
+있는 것에 감사하며 나눌 줄 아는 마음을 허락하여 주옵소서.
+걱정이나 두려움 없이 주님의 공급하심을 믿게 하시고,
+재정을 통해 하나님의 나라에 쓰임받는 가정이 되게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "분노를 다스리는 힘을 주소서",
+      verse: "분을 내어도 죄를 짓지 말며 해가 지도록 분을 품지 말고",
+      ref: "에베소서 4:26",
+      text: `주님,
+남편이 감정을 주님의 도우심으로 다스릴 수 있게 하여 주옵소서.
+분노가 올라올 때 먼저 멈추고 주님께 구하는 지혜를 주시고,
+말과 행동으로 가족에게 상처 주지 않게 지켜 주옵소서.
+성령의 열매인 온유와 절제를 남편의 삶에 풍성히 허락하시어,
+가정이 평화로운 쉼터가 되게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "좋은 아버지가 되게 하소서",
+      verse: "자식들은 여호와의 기업이요 태의 열매는 그의 상급이로다",
+      ref: "시편 127:3",
+      text: `아버지 하나님,
+남편이 자녀에게 좋은 아버지이게 하여 주옵소서.
+바쁜 일상 속에서도 아이들과 함께하는 시간을 소중히 여기게 하시고,
+사랑과 인정의 말로 아이들의 마음을 세워주는 아버지가 되게 하여 주옵소서.
+하나님 아버지의 사랑을 아이들에게 전달하는 통로가 되게 하시고,
+자녀들이 아버지를 통해 하나님을 알아가게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "인간관계를 지혜롭게 하소서",
+      verse: "할 수 있거든 너희로서는 모든 사람과 더불어 화목하라",
+      ref: "로마서 12:18",
+      text: `평화의 하나님,
+남편이 모든 관계에서 지혜롭고 온화하게 행하게 하여 주옵소서.
+오해가 생길 때는 먼저 이해하려 노력하게 하시고,
+갈등이 있을 때는 화해를 먼저 구하는 마음을 허락하여 주옵소서.
+직장에서, 교회에서, 이웃과의 관계에서
+주님의 빛을 발하는 남편이 되게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "겸손한 마음을 허락하소서",
+      verse: "여호와께서 네게 구하시는 것은 오직 정의를 행하며 인자를 사랑하며 겸손하게 네 하나님과 함께 행하는 것이 아니냐",
+      ref: "미가 6:8",
+      text: `주님,
+남편이 성공 앞에서도 교만하지 않고 겸손하게 하여 주옵소서.
+모든 좋은 것이 주님으로부터 온다는 것을 항상 기억하게 하시고,
+칭찬 받을 때 하나님께 영광 돌리는 마음을 허락하여 주옵소서.
+약한 자를 내려다보지 않고, 강한 자 앞에서도 흔들리지 않으며,
+오직 주님 앞에서만 자신을 낮추는 남편이 되게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "쉼과 안식을 누리게 하소서",
+      verse: "수고하고 무거운 짐 진 자들아 다 내게로 오라 내가 너희를 쉬게 하리라",
+      ref: "마태복음 11:28",
+      text: `안식을 주시는 하나님,
+남편이 일의 무게에 짓눌리지 않고 주님 안에서 참 쉼을 누리게 하여 주옵소서.
+오늘 하루의 수고를 주님 앞에 내려놓고 평안히 쉬게 하시고,
+잠자리에서도 걱정이 아닌 주님의 평화가 임하게 하여 주옵소서.
+몸과 마음이 새롭게 회복되는 안식을 허락하시어
+내일도 기쁨으로 주님의 일을 감당하게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "믿음의 공동체 안에 굳게 서게 하소서",
+      verse: "모이기를 폐하는 어떤 사람들의 습관과 같이 하지 말고",
+      ref: "히브리서 10:25",
+      text: `교회의 머리이신 주님,
+남편이 믿음의 공동체를 사랑하고 헌신하게 하여 주옵소서.
+예배를 귀히 여기고, 형제자매들과 진실한 교제를 나누게 하시고,
+교회의 필요를 자신의 필요처럼 여기는 마음을 허락하여 주옵소서.
+받기만 하는 자가 아닌 나누는 자가 되게 하시고,
+공동체를 통해 주님의 사랑을 더욱 깊이 알게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "순종하는 믿음을 허락하소서",
+      verse: "너희가 나를 사랑하면 나의 계명을 지키리라",
+      ref: "요한복음 14:15",
+      text: `주님,
+남편이 하나님의 말씀에 순종하는 믿음을 갖게 하여 주옵소서.
+이해되지 않아도, 쉽지 않아도
+주님을 신뢰하며 말씀 따라 살게 하여 주옵소서.
+두려움이 아닌 사랑으로, 의무가 아닌 감사로 순종하게 하시고,
+주님의 뜻이 남편의 뜻이 되는 깊은 신앙을 허락하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "남편의 내면을 치유하소서",
+      verse: "상심한 자들을 고치시며 그들의 상처를 싸매시는도다",
+      ref: "시편 147:3",
+      text: `치유의 하나님,
+남편의 마음속 깊은 곳에 있는 상처들을 주님의 손으로 치유하여 주옵소서.
+과거의 아픔이나 실패가 현재의 삶을 옥죄지 않게 하시고,
+주님 안에서 진정한 자유와 회복을 경험하게 하여 주옵소서.
+가슴 깊이 쌓인 짐들을 주님께 내려놓게 하시고,
+새 사람으로 새 날을 살아가는 은혜를 허락하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "마지막까지 신실하게 하소서",
+      verse: "나는 선한 싸움을 싸우고 나의 달려갈 길을 마치고 믿음을 지켰으니",
+      ref: "디모데후서 4:7",
+      text: `신실하신 하나님,
+남편이 믿음의 경주를 끝까지 완주하게 하여 주옵소서.
+처음 주님 앞에 서던 날의 감격을 잃지 않게 하시고,
+세월이 흘러도 더 깊고 성숙한 믿음으로 자라나게 하여 주옵소서.
+인생의 마지막 날 "잘하였도다 착하고 충성된 종아"라는
+주님의 음성을 듣는 남편이 되게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "두려움이 아닌 믿음으로 서게 하소서",
+      verse: "강하고 담대하라 두려워하지 말며 놀라지 말라 네가 어디로 가든지 네 하나님 여호와가 너와 함께 하느니라",
+      ref: "여호수아 1:9",
+      text: `용기의 하나님,
+남편이 삶의 어떤 도전 앞에서도 두려움이 아닌 믿음으로 서게 하여 주옵소서.
+불확실한 미래를 바라볼 때에도 주님의 신실하심을 기억하게 하시고,
+어려운 결정 앞에서 담대하게 나아가는 용기를 주옵소서.
+주님이 함께하신다는 확신이 남편의 발걸음을 든든히 세우게 하시고,
+두려움을 딛고 일어서는 믿음의 삶을 살게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "말씀 안에 거하게 하소서",
+      verse: "이 율법책을 네 입에서 떠나지 말게 하며 주야로 그것을 묵상하여",
+      ref: "여호수아 1:8",
+      text: `말씀이신 하나님,
+남편이 날마다 주님의 말씀 안에 거하게 하여 주옵소서.
+바쁜 일상 속에서도 말씀 읽는 시간을 지키게 하시고,
+읽은 말씀이 삶 속에서 빛을 발하게 하여 주옵소서.
+말씀을 통해 주님의 음성을 듣고, 인도하심을 받게 하시고,
+평생 말씀과 함께하는 신앙인이 되게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "정직하고 성실한 삶을 살게 하소서",
+      verse: "사람이 마음으로 자기의 길을 계획할지라도 그의 걸음을 인도하시는 이는 여호와시니라",
+      ref: "잠언 16:9",
+      text: `진실의 하나님,
+남편이 하나님 앞에서나 사람 앞에서나 정직하게 살게 하여 주옵소서.
+이익을 위해 타협하거나 거짓에 물들지 않게 하시고,
+성실한 손으로 맡겨진 일을 감당하게 하여 주옵소서.
+정직함이 때로 손해처럼 보여도 흔들리지 않게 하시고,
+진실하게 사는 것이 가장 복된 길임을 알게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "이웃을 사랑하는 마음을 주소서",
+      verse: "네 이웃 사랑하기를 네 자신같이 사랑하라",
+      ref: "마태복음 22:39",
+      text: `사랑의 하나님,
+남편이 이웃을 진심으로 사랑하는 마음을 갖게 하여 주옵소서.
+자신의 필요만큼이나 주변 사람들의 필요에 민감하게 하시고,
+도움을 필요로 하는 사람에게 먼저 손을 내밀게 하여 주옵소서.
+그리스도의 사랑이 남편을 통해 흘러나가게 하시고,
+삶으로 복음을 전하는 증인이 되게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "감사하는 삶을 살게 하소서",
+      verse: "범사에 감사하라 이것이 그리스도 예수 안에서 너희를 향하신 하나님의 뜻이니라",
+      ref: "데살로니가전서 5:18",
+      text: `감사의 하나님,
+남편이 모든 상황에서 감사를 발견하는 눈을 갖게 하여 주옵소서.
+부족함을 볼 때도 채워주신 것에 감사하고,
+힘든 순간에도 함께하시는 주님께 감사하게 하여 주옵소서.
+감사가 넘치는 삶이 가정에도 기쁨을 더하게 하시고,
+날마다 주님의 은혜를 세어보는 복된 사람이 되게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "중독과 유혹에서 자유롭게 하소서",
+      verse: "주는 영이시니 주의 영이 계신 곳에는 자유가 있느니라",
+      ref: "고린도후서 3:17",
+      text: `자유를 주시는 하나님,
+남편이 세상의 어떤 유혹과 중독에서도 자유롭게 하여 주옵소서.
+스마트폰, 술, 게임, 음란물 등 영혼을 옭아매는 것들에서 해방시켜 주시고,
+오직 주님만을 가장 큰 기쁨으로 삼는 삶을 살게 하여 주옵소서.
+이미 묶인 것이 있다면 주님의 능력으로 끊게 하시고,
+자유로운 영혼으로 가족을 섬기게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "기도의 사람이 되게 하소서",
+      verse: "아무 것도 염려하지 말고 다만 모든 일에 기도와 간구로 너희 구할 것을 감사함으로 하나님께 아뢰라",
+      ref: "빌립보서 4:6",
+      text: `기도를 들으시는 하나님,
+남편이 기도로 살아가는 사람이 되게 하여 주옵소서.
+아침에 눈을 뜨면 먼저 주님을 찾고,
+하루의 결정마다 기도로 인도받는 삶을 살게 하여 주옵소서.
+가족을 위해, 이웃을 위해, 나라를 위해 기도하게 하시고,
+기도 안에서 주님과 깊이 연결된 신앙을 갖게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "은혜를 베푸는 남편이 되게 하소서",
+      verse: "너희가 서로 사랑하면 이로써 모든 사람이 너희가 내 제자인 줄 알리라",
+      ref: "요한복음 13:35",
+      text: `은혜의 하나님,
+남편이 저와 자녀들에게 늘 은혜를 베푸는 사람이 되게 하여 주옵소서.
+나의 연약함과 실수를 너그럽게 품어주는 남편이 되게 하시고,
+가정 안에서 먼저 용서하고 먼저 이해하는 사람이 되게 하여 주옵소서.
+주님께 받은 사랑이 너무 커서 흘러넘칠 수밖에 없는 남편이 되게 하시고,
+우리 가정이 은혜의 집이 되게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "남편의 과거를 주님께 맡깁니다",
+      verse: "이전 것은 지나갔으니 보라 새것이 되었도다",
+      ref: "고린도후서 5:17",
+      text: `새롭게 하시는 하나님,
+남편의 과거의 실패, 상처, 후회를 주님 앞에 내려놓습니다.
+그것들이 더 이상 남편의 발목을 잡지 않게 하여 주옵소서.
+예수 그리스도 안에서 새로운 피조물이 된 남편으로
+새 날을 새 마음으로 살게 하여 주옵소서.
+과거가 아닌 미래를 향해 주님과 함께 걸어가게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "절제하는 삶을 살게 하소서",
+      verse: "모든 운동선수가 모든 일에 절제하나니 그들은 썩을 승리자의 관을 얻고자 하되 우리는 썩지 아니할 것을 얻고자 하노라",
+      ref: "고린도전서 9:25",
+      text: `절제의 하나님,
+남편이 삶의 모든 영역에서 절제하는 능력을 갖게 하여 주옵소서.
+먹는 것, 쉬는 것, 일하는 것 모두에 균형을 잡게 하시고,
+해야 할 것과 하지 말아야 할 것을 분명히 구분하게 하여 주옵소서.
+성령의 열매인 절제가 남편의 삶에 충만히 나타나게 하시고,
+흔들리지 않는 절제 위에 아름다운 삶이 세워지게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "주님 앞에 정결한 남편이 되게 하소서",
+      verse: "하나님이 우리를 부르심은 부정하게 하심이 아니요 거룩하게 하심이니",
+      ref: "데살로니가전서 4:7",
+      text: `거룩하신 하나님,
+남편이 주님 앞에 정결하고 거룩한 삶을 살게 하여 주옵소서.
+눈과 마음이 세상의 더러운 것에 물들지 않게 지켜 주시고,
+생각과 행동이 하나님이 기뻐하시는 것이 되게 하여 주옵소서.
+가정을 거룩하게 지키는 남편이 되게 하시고,
+아내와 자녀들에게 신뢰받는 순결한 남편이 되게 하여 주옵소서.
+예수님의 이름으로 기도합니다. 아멘.`
+    },
+    {
+      title: "이 기도를 이루어 주실 줄 믿습니다",
+      verse: "여호와께 맡기라 그를 의지하면 그가 이루시고",
+      ref: "시편 37:5",
+      text: `신실하신 하나님,
+지난 30일 동안 남편을 위해 드린 기도를 주님께서 들으셨음을 믿습니다.
+제가 본 것보다 더 크게, 제가 구한 것보다 더 풍성하게
+남편의 삶을 이루어 가실 주님을 신뢰합니다.
+기도가 응답될 때까지 포기하지 않겠습니다.
+남편의 삶을 온전히 주님의 손에 맡깁니다.
+예수님의 이름으로 기도합니다. 아멘.`
+    }
+  ]
+};
+
+// ════════════════════════════════════════════
+//  BUILD CARDS
+// ════════════════════════════════════════════
+function getActivePrayers(section) {
+  try {
+    const custom = JSON.parse(localStorage.getItem('prayer30_custom_' + section));
+    if (Array.isArray(custom) && custom.length === 30) return custom;
+  } catch {}
+  return PRAYERS[section];
+}
+
+function buildCards(section) {
+  const prayers = getActivePrayers(section);
+  const grid = document.getElementById(section + '-grid');
+  const numClass = section === 'child' ? 'num-child' : 'num-husband';
+  grid.innerHTML = prayers.map((p, i) => {
+    const day = i + 1;
+    return `
+    <div class="day-card" data-section="${section}" data-day="${day}">
+      <div class="card-header">
+        <div class="day-num ${numClass}">${day}</div>
+        <div class="card-info">
+          <div class="card-title">${p.title}</div>
+          <div class="card-date">${day}일차</div>
+        </div>
+        <button class="check-btn" onclick="toggleDone(event,'${section}',${day})" title="완료 표시">
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+            <path d="M2.5 7.5L6 11L12.5 4.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <svg class="expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </div>
+      <div class="card-body">
+        <div class="card-body-inner">
+          <div class="prayer-verse">${p.ref} — ${p.verse}</div>
+          <div class="prayer-text">${p.text}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // attach expand listeners
+  grid.querySelectorAll('.card-header').forEach(h => {
+    h.addEventListener('click', () => h.closest('.day-card').classList.toggle('open'));
+  });
+}
+
+// ════════════════════════════════════════════
+//  STORAGE
+// ════════════════════════════════════════════
+function loadDone(section) {
+  try { return JSON.parse(localStorage.getItem('prayer30_' + section)) || []; }
+  catch { return []; }
+}
+function saveDone(section, arr) {
+  localStorage.setItem('prayer30_' + section, JSON.stringify(arr));
+}
+
+function applyDone(section) {
+  const done = loadDone(section);
+  done.forEach(day => {
+    const card = document.querySelector(`.day-card[data-section="${section}"][data-day="${day}"]`);
+    if (card) card.classList.add('done');
+  });
+  updateProgress(section);
+}
+
+function toggleDone(e, section, day) {
+  e.stopPropagation();
+  const card = document.querySelector(`.day-card[data-section="${section}"][data-day="${day}"]`);
+  const done = loadDone(section);
+  if (card.classList.contains('done')) {
+    card.classList.remove('done');
+    const idx = done.indexOf(day);
+    if (idx > -1) done.splice(idx, 1);
+  } else {
+    card.classList.add('done');
+    if (!done.includes(day)) done.push(day);
+  }
+  saveDone(section, done);
+  updateProgress(section);
+}
+
+function updateProgress(section) {
+  const done = loadDone(section).length;
+  const total = PRAYERS[section].length;
+  const pct = total ? (done / total * 100).toFixed(0) : 0;
+  const el = document.getElementById(section + '-progress-text');
+  const fill = document.getElementById(section + '-progress-fill');
+  if (el) el.textContent = `${done} / ${total} 완료`;
+  if (fill) fill.style.width = pct + '%';
+  // home mini
+  const hFill = document.getElementById('home-' + section + '-fill');
+  const hLabel = document.getElementById('home-' + section + '-label');
+  if (hFill) hFill.style.width = pct + '%';
+  if (hLabel) hLabel.textContent = `${done} / ${total}`;
+}
+
+function resetSection(section) {
+  if (!confirm('기도 완료 기록을 모두 초기화할까요?')) return;
+  localStorage.removeItem('prayer30_' + section);
+  document.querySelectorAll(`.day-card[data-section="${section}"]`).forEach(c => c.classList.remove('done'));
+  updateProgress(section);
+}
+
+// ════════════════════════════════════════════
+//  NAVIGATION
+// ════════════════════════════════════════════
+function goTo(section) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(section + '-screen').classList.add('active');
+  window.scrollTo(0, 0);
+  history.replaceState(null, '', '#' + section);
+  buildCards(section);
+  applyDone(section);
+}
+
+function goHome() {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('home').classList.add('active');
+  window.scrollTo(0, 0);
+  history.replaceState(null, '', location.pathname);
+  updateProgress('child');
+  updateProgress('husband');
+}
+
+// ════════════════════════════════════════════
+//  INIT — URL 해시로 마지막 섹션 복원
+// ════════════════════════════════════════════
+updateProgress('child');
+updateProgress('husband');
+const _hash = location.hash.replace('#', '');
+if (_hash === 'child' || _hash === 'husband') {
+  goTo(_hash);
+}
+</script>
+</body>
+</html>

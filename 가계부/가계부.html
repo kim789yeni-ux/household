@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>가계부</title>
+  <style>
+    :root {
+      --bg: #f6f8fc;
+      --card: #ffffff;
+      --text: #24324a;
+      --muted: #66748a;
+      --line: #e5ebf3;
+      --accent: #4f77ff;
+      --accent2: #4cc4a6;
+      --danger: #ec5d5d;
+      --warning: #f59e0b;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .wrap {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 24px 16px 40px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #4f77ff 0%, #6f7cff 100%);
+      color: white;
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 18px 40px rgba(79, 119, 255, 0.18);
+    }
+
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: 1.7rem;
+    }
+
+    .hero p {
+      margin: 0;
+      color: rgba(255,255,255,0.92);
+      font-size: 0.95rem;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .summary-card {
+      background: rgba(255,255,255,0.16);
+      border: 1px solid rgba(255,255,255,0.24);
+      border-radius: 16px;
+      padding: 14px;
+      backdrop-filter: blur(8px);
+    }
+
+    .summary-card .label { font-size: 0.8rem; opacity: 0.92; }
+    .summary-card .value { font-size: 1.17rem; font-weight: 700; margin-top: 4px; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.02fr 0.98fr;
+      gap: 16px;
+      margin-top: 18px;
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 18px;
+      box-shadow: 0 10px 24px rgba(36, 50, 74, 0.05);
+    }
+
+    .panel h2 {
+      margin: 0 0 14px;
+      font-size: 1.05rem;
+    }
+
+    .field {
+      margin-bottom: 10px;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.84rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 0.95rem;
+      color: var(--text);
+      background: #fbfdff;
+      font-family: inherit;
+    }
+
+    .field textarea { min-height: 78px; resize: vertical; }
+
+    .row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 10px 13px;
+      font-size: 0.94rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    button:hover { transform: translateY(-1px); }
+
+    .btn-primary { background: var(--accent); color: white; }
+    .btn-second { background: #eef3ff; color: var(--accent); }
+    .btn-danger { background: #ffeaea; color: var(--danger); }
+
+    .tools {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+
+    .helper-text {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .filter {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .filter .chip {
+      border: 1px solid var(--line);
+      background: #f9fbff;
+      color: var(--muted);
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+    }
+
+    .list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .item {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px;
+      background: #fcfdff;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .item .meta { flex: 1; min-width: 0; }
+    .item .title { font-weight: 700; margin-bottom: 2px; }
+    .item .sub { font-size: 0.86rem; color: var(--muted); }
+
+    .badge {
+      display: inline-block;
+      padding: 5px 8px;
+      border-radius: 999px;
+      font-size: 0.77rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .badge.expense { background: #ffeaea; color: var(--danger); }
+    .badge.income { background: #e6f9f3; color: var(--accent2); }
+
+    .amount {
+      font-weight: 800;
+      font-size: 1rem;
+      white-space: nowrap;
+    }
+
+    .amount.expense { color: var(--danger); }
+    .amount.income { color: var(--accent2); }
+
+    .empty {
+      text-align: center;
+      color: var(--muted);
+      border: 1px dashed var(--line);
+      border-radius: 14px;
+      padding: 16px;
+      background: #fcfdff;
+    }
+
+    .card-summary {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .card-summary-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 12px;
+      background: #fcfdff;
+    }
+
+    .card-summary-title {
+      font-weight: 700;
+    }
+
+    .card-summary-amount {
+      color: var(--danger);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .category-summary {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .category-summary-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 12px;
+      background: #fdfefe;
+    }
+
+    .category-summary-title {
+      font-weight: 700;
+    }
+
+    .category-summary-amount {
+      color: var(--danger);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .record-group {
+      margin-bottom: 12px;
+    }
+
+    .record-group-title {
+      font-size: 0.92rem;
+      font-weight: 800;
+      margin: 0 0 8px;
+      color: var(--accent);
+    }
+
+    .payment-summary {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .payment-summary-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 12px;
+      background: #f7faff;
+    }
+
+    .payment-summary-title {
+      font-weight: 700;
+    }
+
+    .payment-summary-amount {
+      color: var(--danger);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #24324a;
+      color: white;
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      box-shadow: 0 12px 24px rgba(36, 50, 74, 0.18);
+      opacity: 0;
+      transform: translateY(12px);
+      transition: all 0.25s ease;
+      pointer-events: none;
+      z-index: 1000;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 830px) {
+      .grid { grid-template-columns: 1fr; }
+      .summary { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <h1>🏠 가계부</h1>
+      <p>남편과 함께 기록하고, 저장하고, 공유할 수 있는 간단한 가계부입니다.</p>
+      <div class="summary">
+        <div class="summary-card">
+          <div class="label">이번 달 수입</div>
+          <div class="value" id="income-total">0원</div>
+        </div>
+        <div class="summary-card">
+          <div class="label">이번 달 지출</div>
+          <div class="value" id="expense-total">0원</div>
+        </div>
+        <div class="summary-card">
+          <div class="label">잔액</div>
+          <div class="value" id="balance-total">0원</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="grid">
+      <section class="panel">
+        <h2>➕ 내역 추가</h2>
+        <div class="field">
+          <label for="date">날짜</label>
+          <input id="date" type="date" />
+        </div>
+        <div class="row-2">
+          <div class="field">
+            <label for="type">분류</label>
+            <select id="type">
+              <option value="expense">지출</option>
+              <option value="income">수입</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="category">카테고리</label>
+            <select id="category">
+              <option value="식비">식비</option>
+              <option value="교통">교통</option>
+              <option value="생활">생활</option>
+              <option value="카페">카페</option>
+              <option value="보험료">보험료</option>
+              <option value="아이관련">아이관련</option>
+              <option value="반려견관련">반려견관련</option>
+              <option value="월급">월급</option>
+              <option value="기타">기타</option>
+            </select>
+          </div>
+        </div>
+        <div class="row-2">
+          <div class="field">
+            <label for="amount">금액</label>
+            <input id="amount" type="number" min="0" step="100" placeholder="예: 12000" />
+          </div>
+          <div class="field">
+            <label for="payment">결제수단</label>
+            <select id="payment">
+              <option value="현금">현금</option>
+              <option value="카드">카드</option>
+              <option value="체크카드">체크카드</option>
+              <option value="계좌이체">계좌이체</option>
+              <option value="기타">기타</option>
+            </select>
+          </div>
+        </div>
+        <div class="field" id="card-name-field" style="display:none;">
+          <label for="card-name">카드 종류 / 계좌명</label>
+          <input id="card-name" list="card-name-list" placeholder="예: 삼성biz, 카뱅예원" />
+          <datalist id="card-name-list">
+            <option value="삼성biz"></option>
+            <option value="삼성edu"></option>
+            <option value="삼성u+"></option>
+            <option value="현대코스트코"></option>
+            <option value="신한성민"></option>
+            <option value="삼성성민"></option>
+          </datalist>
+          <datalist id="check-card-name-list">
+            <option value="기업예원급여"></option>
+            <option value="기업사업자"></option>
+            <option value="토스예원"></option>
+            <option value="카뱅예원"></option>
+            <option value="신한성민"></option>
+          </datalist>
+          <datalist id="cash-account-list">
+            <option value="카뱅예원"></option>
+            <option value="카뱅성민"></option>
+            <option value="기업예원급여"></option>
+            <option value="기업사업자"></option>
+            <option value="토스예원"></option>
+            <option value="신한성민"></option>
+          </datalist>
+        </div>
+        <div class="helper-text">카드·체크카드·현금계좌를 구분해서 기록하면 정산이 더 편합니다.</div>
+        <div class="field">
+          <label for="description">내용</label>
+          <input id="description" type="text" placeholder="예: 장보기, 월급, 보험료" />
+        </div>
+        <div class="field">
+          <label for="memo">메모</label>
+          <textarea id="memo" placeholder="남편과 공유할 메모를 적어요."></textarea>
+        </div>
+        <div class="btn-row">
+          <button class="btn-primary" id="save-btn">저장하기</button>
+          <button class="btn-second" id="reset-btn">입력 초기화</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="filter">
+          <h2 style="margin:0;">📝 기록 목록</h2>
+          <div class="chip" id="month-label">이번 달</div>
+        </div>
+        <div class="tools">
+          <input id="month-filter" type="month" />
+          <button class="btn-second" id="copy-link-btn">🔗 공유 링크 복사</button>
+          <div class="chip">💾 이 브라우저에 자동 저장</div>
+        </div>
+        <div class="helper-text">카드 정산은 월별 카드 합계로 맞춰보면 편합니다.</div>
+        <div id="payment-summary" class="payment-summary"></div>
+        <div id="category-summary" class="category-summary"></div>
+        <div id="card-summary" class="card-summary"></div>
+        <div id="records-list" class="list"></div>
+      </section>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const STORAGE_KEY = 'family-ledger-v1';
+    const state = {
+      records: []
+    };
+
+    const refs = {
+      date: document.getElementById('date'),
+      type: document.getElementById('type'),
+      category: document.getElementById('category'),
+      amount: document.getElementById('amount'),
+      payment: document.getElementById('payment'),
+      cardName: document.getElementById('card-name'),
+      cardNameField: document.getElementById('card-name-field'),
+      description: document.getElementById('description'),
+      memo: document.getElementById('memo'),
+      monthFilter: document.getElementById('month-filter'),
+      recordsList: document.getElementById('records-list'),
+      incomeTotal: document.getElementById('income-total'),
+      expenseTotal: document.getElementById('expense-total'),
+      balanceTotal: document.getElementById('balance-total'),
+      monthLabel: document.getElementById('month-label'),
+      paymentSummary: document.getElementById('payment-summary'),
+      categorySummary: document.getElementById('category-summary'),
+      cardSummary: document.getElementById('card-summary'),
+      toast: document.getElementById('toast')
+    };
+
+    function formatWon(value) {
+      return `${Number(value).toLocaleString()}원`;
+    }
+
+    function showToast(message) {
+      refs.toast.textContent = message;
+      refs.toast.classList.add('show');
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => refs.toast.classList.remove('show'), 1800);
+    }
+
+    function loadRecords() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) {
+        return [];
+      }
+      try {
+        return JSON.parse(raw);
+      } catch (e) {
+        console.error('저장된 가계부 데이터를 읽지 못했습니다.', e);
+        return [];
+      }
+    }
+
+    function saveRecords() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.records));
+    }
+
+    function getCurrentMonth() {
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = String(now.getMonth() + 1).padStart(2, '0');
+      return `${y}-${m}`;
+    }
+
+    function getFilteredRecords() {
+      const month = refs.monthFilter.value || getCurrentMonth();
+      return state.records.filter((item) => item.date.startsWith(month));
+    }
+
+    function updateCardFieldVisibility() {
+      const shouldShow = ['현금', '카드', '체크카드'].includes(refs.payment.value);
+      refs.cardNameField.style.display = shouldShow ? 'block' : 'none';
+
+      if (!shouldShow) {
+        refs.cardName.value = '';
+        return;
+      }
+
+      let labelText = '카드 종류 / 계좌명';
+      let placeholder = '예: 삼성biz, 카뱅예원';
+      let datalistId = 'card-name-list';
+
+      if (refs.payment.value === '현금') {
+        labelText = '현금계좌';
+        placeholder = '예: 카뱅예원, 신한성민';
+        datalistId = 'cash-account-list';
+      } else if (refs.payment.value === '체크카드') {
+        labelText = '체크카드 종류';
+        placeholder = '예: 기업예원급여, 토스예원';
+        datalistId = 'check-card-name-list';
+      } else {
+        labelText = '카드 종류';
+        placeholder = '예: 삼성biz, 현대코스트코';
+        datalistId = 'card-name-list';
+      }
+
+      refs.cardNameField.querySelector('label').textContent = labelText;
+      refs.cardName.placeholder = placeholder;
+      refs.cardName.setAttribute('list', datalistId);
+    }
+
+    function getExpenseTotal(filtered, matcher) {
+      return filtered
+        .filter((item) => item.type === 'expense' && matcher(item))
+        .reduce((sum, item) => sum + Number(item.amount || 0), 0);
+    }
+
+    function renderPaymentSummary(filtered) {
+      const groups = [
+        { title: '현금 / 체크카드 지출', matcher: (item) => ['현금', '체크카드'].includes(item.payment) },
+        { title: '카드 지출', matcher: (item) => item.payment === '카드' },
+        { title: '기타 지출', matcher: (item) => ['계좌이체', '기타'].includes(item.payment) }
+      ];
+
+      refs.paymentSummary.innerHTML = groups.map((group) => `
+        <div class="payment-summary-item">
+          <div class="payment-summary-title">${escapeHtml(group.title)}</div>
+          <div class="payment-summary-amount">${formatWon(getExpenseTotal(filtered, group.matcher))}</div>
+        </div>
+      `).join('');
+    }
+
+    function renderCategorySummary(filtered) {
+      const categoryTotals = filtered
+        .filter((item) => item.type === 'expense')
+        .reduce((acc, item) => {
+          const key = item.category || '기타';
+          acc[key] = (acc[key] || 0) + Number(item.amount || 0);
+          return acc;
+        }, {});
+
+      const entries = Object.entries(categoryTotals).sort((a, b) => b[1] - a[1]);
+
+      if (!entries.length) {
+        refs.categorySummary.innerHTML = '<div class="empty">이번 달 카테고리 지출 내역이 없습니다.</div>';
+        return;
+      }
+
+      refs.categorySummary.innerHTML = entries.map(([name, amount]) => `
+        <div class="category-summary-item">
+          <div class="category-summary-title">${escapeHtml(name)}</div>
+          <div class="category-summary-amount">${formatWon(amount)}</div>
+        </div>
+      `).join('');
+    }
+
+    function renderCardSummary(filtered) {
+      const cardTotals = filtered
+        .filter((item) => item.type === 'expense' && ['카드', '체크카드'].includes(item.payment) && item.cardName)
+        .reduce((acc, item) => {
+          const key = item.cardName;
+          acc[key] = (acc[key] || 0) + Number(item.amount || 0);
+          return acc;
+        }, {});
+
+      const entries = Object.entries(cardTotals).sort((a, b) => b[1] - a[1]);
+
+      if (!entries.length) {
+        refs.cardSummary.innerHTML = '<div class="empty">이번 달 카드 지출 내역이 없습니다.</div>';
+        return;
+      }
+
+      refs.cardSummary.innerHTML = entries.map(([name, amount]) => `
+        <div class="card-summary-item">
+          <div class="card-summary-title">${escapeHtml(name)}</div>
+          <div class="card-summary-amount">${formatWon(amount)}</div>
+        </div>
+      `).join('');
+    }
+
+    function render() {
+      const month = refs.monthFilter.value || getCurrentMonth();
+      refs.monthLabel.textContent = `${month.replace('-', '년 ')}월`;
+
+      const filtered = getFilteredRecords();
+      const income = filtered.filter((item) => item.type === 'income').reduce((sum, item) => sum + Number(item.amount || 0), 0);
+      const expense = filtered.filter((item) => item.type === 'expense').reduce((sum, item) => sum + Number(item.amount || 0), 0);
+      const balance = income - expense;
+
+      refs.incomeTotal.textContent = formatWon(income);
+      refs.expenseTotal.textContent = formatWon(expense);
+      refs.balanceTotal.textContent = `${balance >= 0 ? '' : '-'}${formatWon(Math.abs(balance))}`;
+
+      renderPaymentSummary(filtered);
+      renderCategorySummary(filtered);
+      renderCardSummary(filtered);
+
+      if (!filtered.length) {
+        refs.recordsList.innerHTML = '<div class="empty">이 달의 기록이 없습니다. 위 폼에서 추가해보세요.</div>';
+        return;
+      }
+
+      const groups = [];
+      const expenseItems = filtered.filter((item) => item.type === 'expense');
+      const cashAndCheckItems = expenseItems.filter((item) => ['현금', '체크카드'].includes(item.payment));
+      if (cashAndCheckItems.length) {
+        groups.push({ title: '현금 / 체크카드 지출', items: cashAndCheckItems });
+      }
+
+      const cardItemsByName = expenseItems
+        .filter((item) => item.payment === '카드')
+        .reduce((acc, item) => {
+          const key = item.cardName || '카드(미입력)';
+          if (!acc[key]) acc[key] = [];
+          acc[key].push(item);
+          return acc;
+        }, {});
+
+      Object.entries(cardItemsByName)
+        .sort((a, b) => b[1].length - a[1].length)
+        .forEach(([name, items]) => {
+          groups.push({ title: `카드 · ${name}`, items });
+        });
+
+      const otherExpenses = expenseItems.filter((item) => !['현금', '체크카드', '카드'].includes(item.payment));
+      if (otherExpenses.length) {
+        groups.push({ title: '기타 지출', items: otherExpenses });
+      }
+
+      const incomeItems = filtered.filter((item) => item.type === 'income');
+      if (incomeItems.length) {
+        groups.push({ title: '수입', items: incomeItems });
+      }
+
+      refs.recordsList.innerHTML = groups.map((group) => {
+        const itemsHtml = group.items
+          .sort((a, b) => b.date.localeCompare(a.date))
+          .map((item) => {
+            const paymentLabel = ['현금', '카드', '체크카드'].includes(item.payment) && item.cardName
+              ? `${escapeHtml(item.payment)} · ${escapeHtml(item.cardName)}`
+              : escapeHtml(item.payment || '기타');
+            return `
+              <div class="item">
+                <div class="meta">
+                  <span class="badge ${item.type === 'income' ? 'income' : 'expense'}">${item.type === 'income' ? '수입' : '지출'}</span>
+                  <div class="title">${escapeHtml(item.description || '내용 없음')}</div>
+                  <div class="sub">${item.date} · ${escapeHtml(item.category)} · ${paymentLabel}</div>
+                  ${item.memo ? `<div class="sub">${escapeHtml(item.memo)}</div>` : ''}
+                </div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <div class="amount ${item.type === 'income' ? 'income' : 'expense'}">${item.type === 'income' ? '+' : '-'}${formatWon(item.amount || 0)}</div>
+                  <button class="btn-danger" onclick="removeRecord('${item.id}')">삭제</button>
+                </div>
+              </div>
+            `;
+          }).join('');
+
+        return `
+          <div class="record-group">
+            <div class="record-group-title">${escapeHtml(group.title)}</div>
+            <div class="list">${itemsHtml}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function resetForm() {
+      refs.date.value = new Date().toISOString().slice(0, 10);
+      refs.type.value = 'expense';
+      refs.category.value = '식비';
+      refs.amount.value = '';
+      refs.payment.value = '카드';
+      refs.cardName.value = '';
+      refs.description.value = '';
+      refs.memo.value = '';
+      updateCardFieldVisibility();
+      refs.amount.focus();
+    }
+
+    function addRecord() {
+      const payload = {
+        id: crypto.randomUUID(),
+        date: refs.date.value || new Date().toISOString().slice(0, 10),
+        type: refs.type.value,
+        category: refs.category.value,
+        amount: Number(refs.amount.value || 0),
+        payment: refs.payment.value,
+        cardName: ['현금', '카드', '체크카드'].includes(refs.payment.value) ? refs.cardName.value.trim() : '',
+        description: refs.description.value.trim(),
+        memo: refs.memo.value.trim()
+      };
+
+      if (!payload.description) {
+        showToast('내용을 입력해주세요.');
+        refs.description.focus();
+        return;
+      }
+      if (!payload.amount || payload.amount <= 0) {
+        showToast('금액은 1원 이상이어야 합니다.');
+        refs.amount.focus();
+        return;
+      }
+      if (['현금', '카드', '체크카드'].includes(payload.payment) && !payload.cardName) {
+        const message = payload.payment === '현금' ? '현금계좌를 입력해주세요.' : '카드 종류를 입력해주세요.';
+        showToast(message);
+        refs.cardName.focus();
+        return;
+      }
+
+      state.records.push(payload);
+      saveRecords();
+      render();
+      resetForm();
+      showToast('저장되었습니다.');
+    }
+
+    function removeRecord(id) {
+      state.records = state.records.filter((item) => item.id !== id);
+      saveRecords();
+      render();
+      showToast('삭제되었습니다.');
+    }
+
+    function encodeRecords(records) {
+      const json = JSON.stringify(records);
+      const bytes = new TextEncoder().encode(json);
+      let binary = '';
+      bytes.forEach((b) => {
+        binary += String.fromCharCode(b);
+      });
+      return btoa(binary);
+    }
+
+    function decodeRecords(encoded) {
+      const binary = atob(encoded);
+      const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
+      return JSON.parse(new TextDecoder().decode(bytes));
+    }
+
+    function copyShareLink() {
+      const shareData = encodeRecords(state.records);
+      const shareUrl = `${window.location.href.split('#')[0]}#data=${shareData}`;
+      if (navigator.clipboard?.writeText) {
+        navigator.clipboard.writeText(shareUrl).then(() => {
+          showToast('공유 링크를 복사했습니다.');
+        });
+      } else {
+        window.prompt('공유 링크를 복사하세요.', shareUrl);
+      }
+    }
+
+    function applySharedDataFromHash() {
+      const hash = window.location.hash;
+      if (!hash.startsWith('#data=')) return;
+      try {
+        const encoded = hash.replace('#data=', '');
+        const sharedRecords = decodeRecords(encoded);
+        if (Array.isArray(sharedRecords) && sharedRecords.length) {
+          state.records = sharedRecords;
+          saveRecords();
+          render();
+          showToast('공유된 내역을 불러왔습니다.');
+        }
+      } catch (e) {
+        console.error('공유 링크를 해석하지 못했습니다.', e);
+        showToast('공유 링크가 올바르지 않습니다.');
+      }
+    }
+
+    document.getElementById('save-btn').addEventListener('click', addRecord);
+    document.getElementById('reset-btn').addEventListener('click', resetForm);
+    document.getElementById('copy-link-btn').addEventListener('click', copyShareLink);
+    refs.monthFilter.addEventListener('change', render);
+    refs.payment.addEventListener('change', updateCardFieldVisibility);
+
+    window.removeRecord = removeRecord;
+
+    (function init() {
+      state.records = loadRecords();
+      refs.monthFilter.value = getCurrentMonth();
+      resetForm();
+      render();
+      applySharedDataFromHash();
+    })();
+  </script>
+</body>
+</html>
